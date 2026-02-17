@@ -1,7 +1,7 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "mint",
-  "name": "Mint Starter Kit",
+  "theme": "sequoia",
+  "name": "BookJMP",
   "colors": {
     "primary": "#16A34A",
     "light": "#07C983",
@@ -24,12 +24,7 @@
     "dark": "/logo/dark.svg"
   },
   "navbar": {
-    "links": [
-      {
-        "label": "Support",
-        "href": "mailto:hi@mintlify.com"
-      }
-    ],
+    "links": [],
     "primary": {
       "type": "button",
       "label": "Dashboard",
@@ -54,5 +49,22 @@
       "github": "https://github.com/mintlify",
       "linkedin": "https://linkedin.com/company/mintlify"
     }
+  },
+  "api": {
+    "playground": {
+      "proxy": false
+    }
+  },
+  "seo": {
+    "indexing": "navigable"
+  },
+  "errors": {
+    "404": {
+      "redirect": false,
+      "title": "Are You Lost?"
+    }
+  },
+  "styling": {
+    "codeblocks": "dark"
   }
 }
