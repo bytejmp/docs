@@ -19,15 +19,6 @@
       }
     ]
   },
-  "logo": "/logo/light.svg",
-  "navbar": {
-    "links": [],
-    "primary": {
-      "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
-    }
-  },
   "contextual": {
     "options": [
      "copy",
