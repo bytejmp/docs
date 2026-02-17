@@ -37,9 +37,9 @@
             ]
           },
           {
-            "group": "Windows Privesc",
+            "group": "Brute-Force / Cracking",
             "pages": [
-              "checklist"
+              "hydra"
             ]
           },
           {
@@ -49,9 +49,9 @@
             ]
           },
           {
-            "group": "Brute-Force / Cracking",
+            "group": "Windows Privesc",
             "pages": [
-              "hydra"
+              "checklist"
             ]
           }
         ]
