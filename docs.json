@@ -3,9 +3,9 @@
   "theme": "mint",
   "name": "BookJMP",
   "colors": {
-    "primary": "#16A34A",
+    "primary": "#ed2d3a",
     "light": "#07C983",
-    "dark": "#15803D"
+    "dark": "#ed2d3a"
   },
   "favicon": "/favicon.svg",
   "navigation": {
