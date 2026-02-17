@@ -26,17 +26,29 @@
   "navigation": {
     "tabs": [
       {
+        "tab": "docs",
         "icon": "square-terminal",
         "pages": [
           "introduction",
+          {
+            "group": "Active Directory",
+            "pages": [
+              "untitled-page"
+            ]
+          },
           {
             "group": "Windows Privesc",
             "pages": [
               "checklist"
             ]
+          },
+          {
+            "group": "Ports",
+            "pages": [
+              "3389-rdp"
+            ]
           }
-        ],
-        "tab": "docs"
+        ]
       }
     ]
   },
