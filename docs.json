@@ -31,11 +31,6 @@
       "github": "https://github.com/bytejmp"
     }
   },
-  "api": {
-    "playground": {
-      "proxy": false
-    }
-  },
   "seo": {
     "indexing": "navigable"
   },
