@@ -1,0 +1,170 @@
+---
+title: "Enumeration Checklist"
+---
+
+# CMD ENUMERATION
+
+## Identity
+
+```cmd
+whoami
+whoami /priv
+whoami /groups
+echo %USERNAME%
+hostname
+```
+
+## System Information
+
+```cmd
+systeminfo
+ver
+wmic os get Caption,Version,BuildNumber,OSArchitecture
+```
+
+## Users & Groups
+
+```cmd
+net user
+net user %USERNAME%
+net localgroup
+net localgroup administrators
+```
+
+## Network
+
+```cmd
+ipconfig /all
+route print
+arp -a
+netstat -ano
+```
+
+## Running Processes
+
+```cmd
+tasklist /v
+```
+
+## Services
+
+```cmd
+sc query
+wmic service get name,displayname,pathname,startmode
+```
+
+## Scheduled Tasks
+
+```cmd
+schtasks /query /fo LIST /v
+```
+
+## Drives
+
+```cmd
+wmic logicaldisk get name
+```
+
+## Installed Updates / Kernel Exploits
+
+```cmd
+wmic qfe
+```
+
+---
+
+# POWERSHELL ENUMERATION
+
+## Identity
+
+```powershell
+whoami
+whoami /priv
+whoami /groups
+$env:USERNAME
+$env:COMPUTERNAME
+```
+
+## System Information
+
+```powershell
+Get-ComputerInfo
+Get-CimInstance Win32_OperatingSystem | select Caption,Version,BuildNumber,OSArchitecture
+Get-ChildItem Env:
+```
+
+## Users & Groups
+
+```powershell
+Get-LocalUser
+Get-LocalGroup
+Get-LocalGroupMember "Administrators"
+```
+
+## Network
+
+```powershell
+Get-NetIPAddress
+Get-NetRoute
+Get-NetTCPConnection
+```
+
+## Installed Software
+
+### 64-bit Programs
+
+```powershell
+Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*" | select DisplayName,DisplayVersion,Publisher
+```
+
+### 32-bit Programs
+
+```powershell
+Get-ItemProperty "HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*" | select DisplayName,DisplayVersion,Publisher
+```
+
+## Processes
+
+```powershell
+Get-Process
+```
+
+## Services
+
+```powershell
+Get-Service
+Get-CimInstance Win32_Service | select Name,DisplayName,PathName,StartMode
+```
+
+## Scheduled Tasks
+
+```powershell
+Get-ScheduledTask
+```
+
+## Drives
+
+```powershell
+Get-PSDrive -PSProvider FileSystem
+```
+
+## Hotfixes / Patches
+
+```powershell
+Get-HotFix
+```
+
+## Defender Status
+
+```powershell
+Get-MpComputerStatus
+```
+## Loot & Credential Hunting
+
+```powershell
+# Search documents (possible credentials)
+Get-ChildItem -Path C:\Users\ -Include .txt,.pdf,*.xls,*.xlsx,*.doc,*.docx -File -Recurse -ErrorAction SilentlyContinue
+
+# PowerShell command history (very important!)
+(Get-PSReadlineOption).HistorySavePath
+```

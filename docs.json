@@ -14,7 +14,13 @@
         "tab": "docs",
         "icon": "square-terminal",
         "pages": [
-          "introduction"
+          "introduction",
+          {
+            "group": "Windows Privesc",
+            "pages": [
+              "checklist"
+            ]
+          }
         ]
       }
     ]
