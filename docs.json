@@ -1,35 +1,31 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "prism",
-  "name": "BookJMP",
-
-  "colors": {
-    "primary": "#ed2d3a"
-  },
-
-  "favicon": "/favicon.svg",
-
   "appearance": {
     "default": "dark",
     "strict": true
   },
-
-  "styling": {
-    "codeblocks": "dark",
-    "colors": {
-      "background": "#0a0a0b",
-      "foreground": "#ffffff",
-      "card": "#111113",
-      "muted": "#a1a1aa",
-      "border": "#1f1f23",
-      "accent": "#ed2d3a"
+  "colors": {
+    "dark": "#140304",
+    "light": "#fff1f2",
+    "primary": "#ed2d3a"
+  },
+  "errors": {
+    "404": {
+      "redirect": false,
+      "title": "Are You Lost?"
     }
   },
-
+  "favicon": "/favicon.svg",
+  "footer": {
+    "socials": {
+      "github": "https://github.com/bytejmp",
+      "x": "https://x.com/ByteJMP"
+    }
+  },
+  "name": "BookJMP",
   "navigation": {
     "tabs": [
       {
-        "tab": "docs",
         "icon": "square-terminal",
         "pages": [
           "introduction",
@@ -39,26 +35,16 @@
               "checklist"
             ]
           }
-        ]
+        ],
+        "tab": "docs"
       }
     ]
   },
-
-  "footer": {
-    "socials": {
-      "x": "https://x.com/ByteJMP",
-      "github": "https://github.com/bytejmp"
-    }
-  },
-
   "seo": {
     "indexing": "navigable"
   },
-
-  "errors": {
-    "404": {
-      "redirect": false,
-      "title": "Are You Lost?"
-    }
-  }
+  "styling": {
+    "codeblocks": "dark"
+  },
+  "theme": "mint"
 }
