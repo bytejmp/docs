@@ -47,6 +47,12 @@
             "pages": [
               "3389-rdp"
             ]
+          },
+          {
+            "group": "Brute-Force / Cracking",
+            "pages": [
+              "hydra"
+            ]
           }
         ]
       }

