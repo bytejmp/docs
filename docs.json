@@ -33,7 +33,7 @@
           {
             "group": "Active Directory",
             "pages": [
-              "Enumeration-AD"
+              "Enumeration-with-PowerView"
             ]
           },
           {
