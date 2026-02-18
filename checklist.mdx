@@ -159,6 +159,7 @@ Get-HotFix
 ```powershell
 Get-MpComputerStatus
 ```
+
 ## Loot & Credential Hunting
 
 ```powershell
@@ -167,4 +168,9 @@ Get-ChildItem -Path C:\Users\ -Include .txt,.pdf,*.xls,*.xlsx,*.doc,*.docx -File
 
 # PowerShell command history (very important!)
 (Get-PSReadlineOption).HistorySavePath
+```
+
+```shellscript
+# Searc documents with PASS string (CMD)
+findstr /SIM /C:"pass" *.ini *.cfg *.xml
 ```

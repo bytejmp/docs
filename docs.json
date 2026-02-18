@@ -62,7 +62,8 @@
           {
             "group": "Windows Privesc",
             "pages": [
-              "checklist"
+              "checklist",
+              "transfer"
             ]
           }
         ]

