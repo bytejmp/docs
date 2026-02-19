@@ -66,6 +66,12 @@
               "checklist",
               "transfer"
             ]
+          },
+          {
+            "group": "Apps",
+            "pages": [
+              "xamp"
+            ]
           }
         ]
       }

