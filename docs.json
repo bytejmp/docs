@@ -56,7 +56,8 @@
           {
             "group": "Ports",
             "pages": [
-              "3389-rdp"
+              "3389-rdp",
+              "3128-squid"
             ]
           },
           {

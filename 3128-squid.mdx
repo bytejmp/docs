@@ -1,0 +1,39 @@
+---
+title: "3128 - Squid Proxy"
+---
+
+## Service Detection
+
+```bash
+nmap -p3128 -sC -sV -Pn TARGET
+```
+
+**Example**
+
+```bash
+PORT     STATE SERVICE    VERSION
+3128/tcp open  http-proxy Squid http proxy 4.14
+|_http-server-header: squid/4.14
+|_http-title: ERROR: The requested URL could not be retrieved
+```
+
+---
+
+## Internal Port Scanning via Squid
+
+### Spose — Squid Port Scanner
+
+https://github.com/aancw/spose
+
+```bash
+git clone https://github.com/aancw/spose.git
+cd spose
+python3 spose.py --proxy TARGET:3128 --target INTERNAL_IP
+```
+
+**Example output**
+
+```shellscript
+10.10.10.5:3306 seems OPEN
+10.10.10.5:8080 seems OPEN
+```
