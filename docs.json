@@ -73,6 +73,12 @@
             "pages": [
               "xamp"
             ]
+          },
+          {
+            "group": "Metasploit",
+            "pages": [
+              "msf-venom"
+            ]
           }
         ]
       }
