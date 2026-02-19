@@ -64,7 +64,8 @@
             "group": "Windows Privesc",
             "pages": [
               "checklist",
-              "transfer"
+              "transfer",
+              "sticky-notes"
             ]
           },
           {
